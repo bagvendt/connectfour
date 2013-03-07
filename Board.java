@@ -73,9 +73,17 @@ public class Board implements Cloneable {
 			col = col - 1;
 			break;
 		}
-		
-		//col = board[];
-		return null;
+		if (col > height || 0 > row) {
+			return null;
+		}
+		if (row > length || 0 > row) {
+			return null;
+		}
+		ArrayList<Brick> theCol = board[col];
+		if (row > theCol.size()) {
+			return null;
+		}
+		return theCol.get(col);
 	}
 
 	public IGameLogic.Winner gameFinished() {
