@@ -78,6 +78,10 @@ public class Board implements Cloneable {
 		//Brick b = board[-1][-1];
 		return null;
 	}
+	
+	public void actions(){
+	
+	}
 
 	public IGameLogic.Winner gameFinished() {
 		// TODO Auto-generated method stub
