@@ -41,7 +41,7 @@ public class LRM_GameLogic implements IGameLogic {
 		long time = System.currentTimeMillis();
 		int depth = 2;
 		int v = 0;
-		while(time < 9000){ // LESS THAN 9000 !
+		while(time < 9000) { // LESS THAN 9000 !
 			v = maxValue(gameBoard,depth,Integer.MAX_VALUE,Integer.MIN_VALUE);
 			depth++;
 		}
@@ -52,19 +52,19 @@ public class LRM_GameLogic implements IGameLogic {
 	private int maxValue(Board state,int depth,int alpha,int beta){
 		
 		switch (state.gameFinished()){
-		case Winner.PLAYER1:
+		case PLAYER1:
 			return ourPlayer == Winner.PLAYER1 ? Integer.MAX_VALUE : Integer.MIN_VALUE;
 			break;
 			
-		case Winner.PLAYER2:
+		case PLAYER2:
 			return ourPlayer == Winner.PLAYER2 ? Integer.MAX_VALUE : Integer.MIN_VALUE;
 			break;
 			
-		case Winner.TIE:
+		case TIE:
 			return 0;
 			break;
 			
-		case Winner.NOT_FINISHED:
+		case NOT_FINISHED:
 			
 			if (depth == 0) return state.evalute();
 			
@@ -84,19 +84,19 @@ public class LRM_GameLogic implements IGameLogic {
 	private int minValue(Board state,int depth,int alpha,int beta){
 		
 		switch (state.gameFinished()){
-			case Winner.PLAYER1:
+			case PLAYER1:
 				return ourPlayer == Winner.PLAYER1 ? Integer.MAX_VALUE : Integer.MIN_VALUE;
 				break;
 				
-			case Winner.PLAYER2:
+			case PLAYER2:
 				return ourPlayer == Winner.PLAYER2 ? Integer.MAX_VALUE : Integer.MIN_VALUE;
 				break;
 				
-			case Winner.TIE:
+			case TIE:
 				return 0;
 				break;
 				
-			case Winner.NOT_FINISHED:
+			case NOT_FINISHED:
 				
 				if (depth == 0) return state.evalute();
 				

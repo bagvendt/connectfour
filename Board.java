@@ -70,6 +70,11 @@ public class Board {
 		//Brick b = board[-1][-1];
 		return null;
 	}
+
+	public IGameLogic.Winner gameFinished() {
+		// TODO Auto-generated method stub
+		return IGameLogic.Winner.NOT_FINISHED;
+	}
 	
 	
 	
