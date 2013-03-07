@@ -54,15 +54,12 @@ public class LRM_GameLogic implements IGameLogic {
 		switch (state.gameFinished()){
 		case PLAYER1:
 			return ourPlayer == Winner.PLAYER1 ? Integer.MAX_VALUE : Integer.MIN_VALUE;
-			break;
 			
 		case PLAYER2:
 			return ourPlayer == Winner.PLAYER2 ? Integer.MAX_VALUE : Integer.MIN_VALUE;
-			break;
 			
 		case TIE:
 			return 0;
-			break;
 			
 		case NOT_FINISHED:
 			
@@ -71,30 +68,34 @@ public class LRM_GameLogic implements IGameLogic {
 			int v = Integer.MIN_VALUE;
 			for (int column : state.actions()){ // Should be arranged according to values from previous iteration
 				
-				Board newState = state.copy();
+				Board newState = (Board) state.clone();
 				newState.layBrick(new Brick(ourPlayer), column);
 				v = Math.max(v,minValue(newState,depth-1,alpha,beta));
 				if (v >= beta) return v;
 				alpha = Math.max(v,alpha);
 			}
 			return v;
+		default: 
+			return 0;
 		}
+		
 	}
 	
 	private int minValue(Board state,int depth,int alpha,int beta){
 		
 		switch (state.gameFinished()){
 			case PLAYER1:
+				//
 				return ourPlayer == Winner.PLAYER1 ? Integer.MAX_VALUE : Integer.MIN_VALUE;
-				break;
+				
 				
 			case PLAYER2:
 				return ourPlayer == Winner.PLAYER2 ? Integer.MAX_VALUE : Integer.MIN_VALUE;
-				break;
+				
 				
 			case TIE:
 				return 0;
-				break;
+				
 				
 			case NOT_FINISHED:
 				
@@ -102,14 +103,15 @@ public class LRM_GameLogic implements IGameLogic {
 				
 				int v = Integer.MAX_VALUE;
 				for (int column : state.actions()){ // Should be arranged according to values from previous iteration
-					Board newState = state.copy();
+					Board newState = (Board)state.clone();
 					newState.layBrick(new Brick(ourPlayer), column);
 					v = Math.min(v,maxValue(newState,depth-1,alpha,beta));
 					if (v <= alpha) return v;
 					alpha = Math.min(v,beta);
 				}
 				return v;
-				break;
+			default:
+				return 0;
 		}
 	}
 

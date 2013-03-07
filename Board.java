@@ -1,6 +1,6 @@
 import java.util.ArrayList;
 
-public class Board {
+public class Board implements Cloneable {
 	
 	private ArrayList<Brick>[] board;
 	private ArrayList<Brick> bricks;
@@ -8,14 +8,22 @@ public class Board {
 	 * @param board
 	 */
 	public Board(int columns, int rows) {
-		//KUSSE
 		board = new ArrayList[columns];
 		for (int i = 0; i < board.length; i++) {
 			board[i] = new ArrayList<Brick>();
 		}
 		bricks = new ArrayList<Brick>();
 	}
-
+	 public Object clone(){
+		  try{
+			  Board cloned = (Board)super.clone();
+			  return cloned;
+		  }
+		  catch(CloneNotSupportedException e){
+			  System.out.println(e);
+		  return null;
+		  }
+		  }
 	public void layBrick(Brick brick, int atColumn) {
 		ArrayList<Brick> column = board[atColumn];
 		column.add(brick);
@@ -74,6 +82,16 @@ public class Board {
 	public IGameLogic.Winner gameFinished() {
 		// TODO Auto-generated method stub
 		return IGameLogic.Winner.NOT_FINISHED;
+	}
+
+	public int evalute() {
+		return 0;
+		
+	}
+
+	public int[] actions() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 	
 	
