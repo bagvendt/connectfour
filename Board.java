@@ -8,6 +8,7 @@ public class Board {
 	 * @param board
 	 */
 	public Board(int columns, int rows) {
+		//KUSSE
 		board = new ArrayList[columns];
 		for (int i = 0; i < board.length; i++) {
 			board[i] = new ArrayList<Brick>();
