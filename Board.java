@@ -1,5 +1,5 @@
 import java.util.ArrayList;
-import java.util.Iterator;
+import java.util.*;
 
 public class Board implements Cloneable {
 	
@@ -99,9 +99,21 @@ public class Board implements Cloneable {
 		
 	}
 
-	public int[] actions() {
-		// TODO Auto-generated method stub
-		return null;
+	public Set<Integer> actions() {
+		Set<Integer> intSet = new HashSet<Integer>(board.length); 
+		
+		for (int i = 0; i < board.length; i++){
+			if (!board[i].isEmpty()){
+			
+				for(int j = -3; j <= 3; j++){
+					if (i+j > 0 && i+j < board.length-1 && board[i+j].size() != board[i+j].height)
+						intSet.add(i+j);
+				}	
+			}
+		}
+		if (intSet.size() == 0) intSet.add(board.length/2);
+		
+		return intSet;
 	}
 	
 	
