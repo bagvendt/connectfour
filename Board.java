@@ -6,6 +6,7 @@ public class Board implements Cloneable {
 	private ArrayList<Brick>[] board;
 	private ArrayList<Brick> bricks;
 	private int height, length;
+	
 	/**
 	 * @param board
 	 */
