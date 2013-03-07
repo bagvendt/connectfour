@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.Iterator;
 
 public class Board implements Cloneable {
 	
@@ -34,13 +35,7 @@ public class Board implements Cloneable {
 		bricks.add(brick);
 	}
 	
-	public IGameLogic.Winner goalState() {
-		for (Brick b: bricks) {
-			//
-			
-		}
-		return IGameLogic.Winner.PLAYER1;
-	}
+	
 	public Brick getBrickRelative(Brick brick, Compass direction) {
 		int col = brick.getColumn();
 		int row = brick.getRow();
@@ -81,7 +76,22 @@ public class Board implements Cloneable {
 
 	public IGameLogic.Winner gameFinished() {
 		// TODO Auto-generated method stub
+		for (Brick b : bricks) {
+			
+		}
 		return IGameLogic.Winner.NOT_FINISHED;
+	}
+	
+	public IGameLogic.Winner checkWinner(Brick brick) {
+		for(Compass direction: Compass.values()) {
+			Brick brick1 = getBrickRelative(brick, direction);
+			Brick brick2 = getBrickRelative(brick1, direction);
+			Brick brick3 = getBrickRelative(brick2, direction);
+			if (brick.getPlayer() == brick1.getPlayer() && brick1.getPlayer() == brick2.getPlayer() && brick2.getPlayer() == brick3.getPlayer()) {
+				return brick.getPlayer();
+			}
+			return IGameLogic.Winner.NOT_FINISHED;
+		}
 	}
 
 	public int evalute() {

@@ -67,7 +67,6 @@ public class LRM_GameLogic implements IGameLogic {
 			
 			int v = Integer.MIN_VALUE;
 			for (int column : state.actions()){ // Should be arranged according to values from previous iteration
-				
 				Board newState = (Board) state.clone();
 				newState.layBrick(new Brick(ourPlayer), column);
 				v = Math.max(v,minValue(newState,depth-1,alpha,beta));
