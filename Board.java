@@ -5,10 +5,13 @@ public class Board implements Cloneable {
 	
 	private ArrayList<Brick>[] board;
 	private ArrayList<Brick> bricks;
+	private int height, length;
 	/**
 	 * @param board
 	 */
 	public Board(int columns, int rows) {
+		length = columns;
+		height = rows;
 		board = new ArrayList[columns];
 		for (int i = 0; i < board.length; i++) {
 			board[i] = new ArrayList<Brick>();
@@ -70,7 +73,8 @@ public class Board implements Cloneable {
 			col = col - 1;
 			break;
 		}
-		//Brick b = board[-1][-1];
+		
+		//col = board[];
 		return null;
 	}
 
@@ -82,16 +86,16 @@ public class Board implements Cloneable {
 		return IGameLogic.Winner.NOT_FINISHED;
 	}
 	
-	public IGameLogic.Winner checkWinner(Brick brick) {
+	public Boolean checkWinner(Brick brick) {
 		for(Compass direction: Compass.values()) {
 			Brick brick1 = getBrickRelative(brick, direction);
 			Brick brick2 = getBrickRelative(brick1, direction);
 			Brick brick3 = getBrickRelative(brick2, direction);
 			if (brick.getPlayer() == brick1.getPlayer() && brick1.getPlayer() == brick2.getPlayer() && brick2.getPlayer() == brick3.getPlayer()) {
-				return brick.getPlayer();
+				return true;
 			}
-			return IGameLogic.Winner.NOT_FINISHED;
 		}
+		return false;
 	}
 
 	public int evalute() {
@@ -105,10 +109,10 @@ public class Board implements Cloneable {
 		for (int i = 0; i < board.length; i++){
 			if (!board[i].isEmpty()){
 			
-				for(int j = -3; j <= 3; j++){
-					if (i+j > 0 && i+j < board.length-1 && board[i+j].size() != board[i+j].height)
-						intSet.add(i+j);
-				}	
+				//for(int j = -3; j <= 3; j++){
+					//if (i+j > 0 && i+j < board.length-1 && board[i+j].size() != board[i+j].height)
+					//	intSet.add(i+j);
+				//}	
 			}
 		}
 		if (intSet.size() == 0) intSet.add(board.length/2);
