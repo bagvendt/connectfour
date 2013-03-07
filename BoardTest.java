@@ -14,9 +14,9 @@ public class BoardTest {
 		board.layBrick(brick1, 0);
 		board.layBrick(brick2, 0);
 		board.layBrick(brick3, 0);
-		assertEquals(0, brick1.getRow());
-		assertEquals(1, brick2.getRow());
-		assertEquals(2, brick3.getRow());
+		assertEquals(1, brick1.getRow());
+		assertEquals(2, brick2.getRow());
+		assertEquals(3, brick3.getRow());
 		
 		assertEquals(0, brick1.getColumn());
 		assertEquals(0, brick2.getColumn());

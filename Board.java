@@ -4,24 +4,23 @@ public class Board {
 	
 	private ArrayList<Brick>[] board;
 	private ArrayList<Brick> bricks;
-	private int maxHeight;
-	
-	
-	
 	/**
 	 * @param board
 	 */
 	public Board(int columns, int rows) {
 		board = new ArrayList[columns];
+		for (int i = 0; i < board.length; i++) {
+			board[i] = new ArrayList<Brick>();
+		}
 		bricks = new ArrayList<Brick>();
-		maxHeight = rows;
 	}
 
 	public void layBrick(Brick brick, int atColumn) {
 		ArrayList<Brick> column = board[atColumn];
+		column.add(brick);
 		int height = column.size();
 		// Column is zero indexed by design, so better make the row zero indexed too.
-		brick.setRow(height -1 );
+		brick.setRow(height);
 		brick.setColumn(atColumn);
 		bricks.add(brick);
 	}
