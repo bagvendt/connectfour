@@ -1,10 +1,8 @@
 import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.Stack;
 
 public class Board {
 	
-	private Brick[][] board;
+	private ArrayList<Brick>[] board;
 	private ArrayList<Brick> bricks;
 	private int maxHeight;
 	
@@ -14,15 +12,13 @@ public class Board {
 	 * @param board
 	 */
 	public Board(int columns, int rows) {
-		board = new Brick[columns][rows];
+		board = new ArrayList[columns];
 		bricks = new ArrayList<Brick>();
 		maxHeight = rows;
 	}
 
 	public void layBrick(Brick brick, int atColumn) {
-		
-		ArrayList<Brick> column = board.get(atColumn);
-		column.add(brick);
+		ArrayList<Brick> column = board[atColumn];
 		int height = column.size();
 		// Column is zero indexed by design, so better make the row zero indexed too.
 		brick.setRow(height -1 );
@@ -71,7 +67,7 @@ public class Board {
 			col = col - 1;
 			break;
 		}
-		Brick b = board[-1][-1];
+		//Brick b = board[-1][-1];
 		return null;
 	}
 	

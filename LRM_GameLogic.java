@@ -13,13 +13,13 @@ public class LRM_GameLogic implements IGameLogic {
 	 */
 
 	private Board gameBoard;
-	private int ourPlayerID;
-	private int enemyPlayerID;
+	private IGameLogic.Winner ourPlayer;
+	private IGameLogic.Winner enemyPlayer;
 	@Override
 	public void initializeGame(int columns, int rows, int player) {
 		gameBoard = new Board(columns,rows);
-		ourPlayerID = player;
-		enemyPlayerID = player == 1 ? 2 : 1; 
+		ourPlayer = player == 1 ? IGameLogic.Winner.PLAYER1 : IGameLogic.Winner.PLAYER2;
+		enemyPlayer = player == 2 ? IGameLogic.Winner.PLAYER1 : IGameLogic.Winner.PLAYER2;
 	}
 
 	/* (non-Javadoc)
@@ -27,7 +27,8 @@ public class LRM_GameLogic implements IGameLogic {
 	 */
 	@Override
 	public void insertCoin(int column, int playerID) {
-		Brick brick = new Brick(playerID);
+		IGameLogic.Winner thePlayer = playerID == 1 ? IGameLogic.Winner.PLAYER1 : IGameLogic.Winner.PLAYER2;
+		Brick brick = new Brick(thePlayer);
 		gameBoard.layBrick(brick, column);	
 	}
 

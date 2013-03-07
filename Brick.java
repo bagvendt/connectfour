@@ -7,11 +7,11 @@ public class Brick {
 
 	/**
 	 * @param column
-	 * @param player
+	 * @param playerID
 	 * @param board
 	 */
-	public Brick(IGameLogic.Winner player) {	
-		this.player = player;
+	public Brick(IGameLogic.Winner playerID) {	
+		this.player = playerID;
 	}
 
 	public int getColumn() {

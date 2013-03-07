@@ -2,7 +2,6 @@ import static org.junit.Assert.*;
 
 import org.junit.Test;
 
-
 public class BoardTest {
 
 	@Test
@@ -23,6 +22,7 @@ public class BoardTest {
 		assertEquals(0, brick2.getColumn());
 		assertEquals(0, brick3.getColumn());
 	}
+
 
 
 
