@@ -113,14 +113,20 @@ public class Board implements Cloneable {
 
 	public Set<Integer> actions() {
 		Set<Integer> intSet = new HashSet<Integer>(board.length); 
-		
-		for (int i = 0; i < board.length; i++){
-			if (!board[i].isEmpty()){
+		int column;
+		for (Brick brick : bricks){
+			column = brick.getColumn();
 			
+<<<<<<< HEAD
 				//for(int j = -3; j <= 3; j++){
 					//if (i+j > 0 && i+j < board.length-1 && board[i+j].size() != board[i+j].height)
 					//	intSet.add(i+j);
 				//}	
+=======
+			for(int j = -3; j <= 3; j++){
+				if (column+j > 0 && column+j < board.length-1 && board[column+j].size() != board[column+j].height)
+					intSet.add(column+j);
+>>>>>>> Changed actions() in Board
 			}
 		}
 		if (intSet.size() == 0) intSet.add(board.length/2);
