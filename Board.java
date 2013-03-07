@@ -41,7 +41,7 @@ public class Board implements Cloneable {
 	
 	public Brick getBrickRelative(Brick brick, Compass direction) {
 		int col = brick.getColumn();
-		int row = brick.getRow();
+		int row = brick.getRow() -1;
 		
 		switch (direction) {
 		case N:
@@ -83,6 +83,7 @@ public class Board implements Cloneable {
 		if (row > theCol.size()) {
 			return null;
 		}
+		System.out.println(row);
 		return theCol.get(col);
 	}
 
