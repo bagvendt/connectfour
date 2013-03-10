@@ -1,3 +1,8 @@
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 /**
  * 
  */
@@ -17,12 +22,15 @@ public class LRM_GameLogic implements IGameLogic {
 	private IGameLogic.Winner enemyPlayer;
 	private int decision;
 	private int decisionDepth;
+	private Map<Integer,Integer> decisions;
 	
 	@Override
 	public void initializeGame(int columns, int rows, int player) {
 		gameBoard = new Board(columns,rows);
 		ourPlayer = player == 1 ? IGameLogic.Winner.PLAYER1 : IGameLogic.Winner.PLAYER2;
 		enemyPlayer = player == 2 ? IGameLogic.Winner.PLAYER1 : IGameLogic.Winner.PLAYER2;
+		
+		decisions = new HashMap<Integer,Integer>();
 	}
 
 	/* (non-Javadoc)
@@ -31,7 +39,7 @@ public class LRM_GameLogic implements IGameLogic {
 	@Override
 	public void insertCoin(int column, int playerID) {
 		IGameLogic.Winner thePlayer = playerID == 1 ? IGameLogic.Winner.PLAYER1 : IGameLogic.Winner.PLAYER2;
-		gameBoard.layBrick(column, thePlayer);	
+		gameBoard.layCoin(column, thePlayer);	
 	}
 
 	/* (non-Javadoc)
@@ -43,39 +51,38 @@ public class LRM_GameLogic implements IGameLogic {
 		long time = System.currentTimeMillis();
 		int maxDepth = 2;
 		decisionDepth = 0;
-		
-		while(maxDepth <= 10) { // LESS THAN 9000 !
+		decisions.clear();
+		Map<Integer, Integer> oldDecisions = new HashMap<Integer,Integer>();
+		while(maxDepth <= 12x) { // LESS THAN 9000 !
+			decisions.clear();
 			decisionDepth = maxDepth;
-			maxValue(maxDepth,Integer.MIN_VALUE,Integer.MAX_VALUE);
+			maxValue(maxDepth,Integer.MIN_VALUE,Integer.MAX_VALUE,oldDecisions);
 			maxDepth++;
+			oldDecisions.clear();
+			oldDecisions.putAll(decisions);
 		}
-		System.out.println(System.currentTimeMillis()-time);
-		return decision;
+		System.out.println("Decision took (ms): " + Long.toString(System.currentTimeMillis()-time));
+		return oldDecisions.get(maxDepth-1);
 	}
 	
-	private int maxValue(int depth,int alpha,int beta){
+	private int maxValue(int depth,int alpha,int beta, Map<Integer, Integer> oldDecision){
 		
 		
 		if (gameBoard.isGameFinished() || depth == 0) return gameBoard.evaluate(ourPlayer);
 		
 		int v = Integer.MIN_VALUE;
 		int tempValue;
-		for (int column : gameBoard.actions()){ // Should be arranged according to values from previous iteration
+		for (int column : gameBoard.actions(oldDecision.get(depth-1))){ // Should be arranged according to values from previous iteration
 			
-			gameBoard.layBrick(column, ourPlayer);
-			tempValue = minValue(depth-1,alpha,beta);
-			gameBoard.removeLastBrick();
+			gameBoard.layCoin(column, ourPlayer);
+			tempValue = minValue(depth-1,alpha,beta,oldDecision);
+			gameBoard.removeLastCoin();
 			if (tempValue > v){
 				v = tempValue;
-				if (depth >= decisionDepth){
-					this.decisionDepth = depth;
-					this.decision = column;
-				}
+				decisions.put(depth, column);
 			}
-			System.out.println(v);
 			
 			if (v >= beta){
-				System.out.println("Betacut: " + Integer.toString(depth));
 				return v;
 			}
 			alpha = Math.max(v,alpha);
@@ -83,8 +90,7 @@ public class LRM_GameLogic implements IGameLogic {
 		return v;
 	}
 	
-	private int minValue(int depth,int alpha,int beta){
-		
+	private int minValue(int depth,int alpha,int beta, Map<Integer,Integer> oldDecision){
 		
 		if (gameBoard.isGameFinished() || depth == 0){
 			return (gameBoard.evaluate(ourPlayer));
@@ -92,22 +98,18 @@ public class LRM_GameLogic implements IGameLogic {
 		
 		int v = Integer.MAX_VALUE;
 		int tempValue;
-		for (int column : gameBoard.actions()){ // Should be arranged according to values from previous iteration
+		for (int column : gameBoard.actions(oldDecision.get(depth-1))){ // Should be arranged according to values from previous iteration
 			
-			gameBoard.layBrick(column, enemyPlayer);
-			tempValue = maxValue(depth-1,alpha,beta);
-			gameBoard.removeLastBrick();
+			gameBoard.layCoin(column, enemyPlayer);
+			tempValue = maxValue(depth-1,alpha,beta,oldDecision);
+			gameBoard.removeLastCoin();
 			
 			if (tempValue < v){
 				v = tempValue;
-				if (depth >= decisionDepth){
-					this.decisionDepth = depth;
-					this.decision = column;
-				}
+				decisions.put(depth, column);
 			}
 			
 			if (v <= alpha){
-				System.out.println("Alphacut: " + Integer.toString(depth));
 				return v;
 			}
 			beta = Math.min(v,beta);

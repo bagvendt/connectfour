@@ -22,13 +22,13 @@ public class Board{
 		}
 	}
 
-	public void layBrick(int column,IGameLogic.Winner player) {
+	public void layCoin(int column,IGameLogic.Winner player) {
 		board[column].push(player);
 		history.push(column);
 		updateGameFinished();
 	}
 
-	public void removeLastBrick() {
+	public void removeLastCoin() {
 		int lastColumn = history.pop();
 		board[lastColumn].pop();
 		updateGameFinished();
@@ -187,8 +187,14 @@ public class Board{
 		finished = IGameLogic.Winner.NOT_FINISHED;
 	}
 	
-	public Set<Integer> actions() {
+	private boolean freeColumn(int column){
+		return (column >= 0 && column <= length && board[column].size()-1 != height);
+	}
+	
+	public Set<Integer> actions(Integer lastBest) {
 		Set<Integer> intSet = new HashSet<Integer>(length); 
+		if (lastBest != null && freeColumn(lastBest)) intSet.add(lastBest);
+		
 		
 		int column;
 		for (int i = 0; i <= length; i++){
@@ -196,7 +202,7 @@ public class Board{
 				for(int j = -3; j <= 3; j++){
 					column = i+j;
 					
-					if (column >= 0 && column <= length && board[column].size()-1 != height)
+					if (freeColumn(column))
 						intSet.add(column);
 				}
 			}
