@@ -15,6 +15,9 @@ public class LRM_GameLogic implements IGameLogic {
 	private Board gameBoard;
 	private IGameLogic.Winner ourPlayer;
 	private IGameLogic.Winner enemyPlayer;
+	private int decision;
+	private int decisionDepth;
+	
 	@Override
 	public void initializeGame(int columns, int rows, int player) {
 		gameBoard = new Board(columns,rows);
@@ -28,8 +31,7 @@ public class LRM_GameLogic implements IGameLogic {
 	@Override
 	public void insertCoin(int column, int playerID) {
 		IGameLogic.Winner thePlayer = playerID == 1 ? IGameLogic.Winner.PLAYER1 : IGameLogic.Winner.PLAYER2;
-		Brick brick = new Brick(thePlayer);
-		gameBoard.layBrick(brick, column);	
+		gameBoard.layBrick(column, thePlayer);	
 	}
 
 	/* (non-Javadoc)
@@ -39,81 +41,78 @@ public class LRM_GameLogic implements IGameLogic {
 	public int decideNextMove() {
 		
 		long time = System.currentTimeMillis();
-		int depth = 2;
-		int v = 0;
-		while(time < 9000) { // LESS THAN 9000 !
-			v = maxValue(gameBoard,depth,Integer.MAX_VALUE,Integer.MIN_VALUE);
-			depth++;
-		}
+		int maxDepth = 2;
+		decisionDepth = 0;
 		
+		while(maxDepth <= 10) { // LESS THAN 9000 !
+			decisionDepth = maxDepth;
+			maxValue(maxDepth,Integer.MIN_VALUE,Integer.MAX_VALUE);
+			maxDepth++;
+		}
+		System.out.println(System.currentTimeMillis()-time);
+		return decision;
+	}
+	
+	private int maxValue(int depth,int alpha,int beta){
+		
+		
+		if (gameBoard.isGameFinished() || depth == 0) return gameBoard.evaluate(ourPlayer);
+		
+		int v = Integer.MIN_VALUE;
+		int tempValue;
+		for (int column : gameBoard.actions()){ // Should be arranged according to values from previous iteration
+			
+			gameBoard.layBrick(column, ourPlayer);
+			tempValue = minValue(depth-1,alpha,beta);
+			gameBoard.removeLastBrick();
+			if (tempValue > v){
+				v = tempValue;
+				if (depth >= decisionDepth){
+					this.decisionDepth = depth;
+					this.decision = column;
+				}
+			}
+			System.out.println(v);
+			
+			if (v >= beta){
+				System.out.println("Betacut: " + Integer.toString(depth));
+				return v;
+			}
+			alpha = Math.max(v,alpha);
+		}
 		return v;
 	}
 	
-	private int maxValue(Board state,int depth,int alpha,int beta){
+	private int minValue(int depth,int alpha,int beta){
 		
-		switch (state.gameFinished()){
-		case PLAYER1:
-			return ourPlayer == Winner.PLAYER1 ? Integer.MAX_VALUE : Integer.MIN_VALUE;
-			
-		case PLAYER2:
-			return ourPlayer == Winner.PLAYER2 ? Integer.MAX_VALUE : Integer.MIN_VALUE;
-			
-		case TIE:
-			return 0;
-			
-		case NOT_FINISHED:
-			
-			if (depth == 0) return state.evalute();
-			
-			int v = Integer.MIN_VALUE;
-			for (int column : state.actions()){ // Should be arranged according to values from previous iteration
-				Board newState = (Board) state.clone();
-				newState.layBrick(new Brick(ourPlayer), column);
-				
-				v = Math.max(v,minValue(newState,depth-1,alpha,beta));
-				
-				if (v >= beta) return v;
-				alpha = Math.max(v,alpha);
-			}
-			return v;
-		default: 
-			return 0;
+		
+		if (gameBoard.isGameFinished() || depth == 0){
+			return (gameBoard.evaluate(ourPlayer));
 		}
 		
-	}
-	
-	private int minValue(Board state,int depth,int alpha,int beta){
-		
-		switch (state.gameFinished()){
-			case PLAYER1:
-				//
-				return ourPlayer == Winner.PLAYER1 ? Integer.MAX_VALUE : Integer.MIN_VALUE;
-				
-				
-			case PLAYER2:
-				return ourPlayer == Winner.PLAYER2 ? Integer.MAX_VALUE : Integer.MIN_VALUE;
-				
-				
-			case TIE:
-				return 0;
-				
-				
-			case NOT_FINISHED:
-				
-				if (depth == 0) return state.evalute();
-				
-				int v = Integer.MAX_VALUE;
-				for (int column : state.actions()){ // Should be arranged according to values from previous iteration
-					Board newState = (Board)state.clone();
-					newState.layBrick(new Brick(ourPlayer), column);
-					v = Math.min(v,maxValue(newState,depth-1,alpha,beta));
-					if (v <= alpha) return v;
-					alpha = Math.min(v,beta);
+		int v = Integer.MAX_VALUE;
+		int tempValue;
+		for (int column : gameBoard.actions()){ // Should be arranged according to values from previous iteration
+			
+			gameBoard.layBrick(column, enemyPlayer);
+			tempValue = maxValue(depth-1,alpha,beta);
+			gameBoard.removeLastBrick();
+			
+			if (tempValue < v){
+				v = tempValue;
+				if (depth >= decisionDepth){
+					this.decisionDepth = depth;
+					this.decision = column;
 				}
+			}
+			
+			if (v <= alpha){
+				System.out.println("Alphacut: " + Integer.toString(depth));
 				return v;
-			default:
-				return 0;
+			}
+			beta = Math.min(v,beta);
 		}
+		return v;
 	}
 
 	/* (non-Javadoc)
@@ -122,7 +121,7 @@ public class LRM_GameLogic implements IGameLogic {
 	@Override
 	public Winner gameFinished() {
 		// TODO Auto-generated method stub
-		return IGameLogic.Winner.NOT_FINISHED;
+		return gameBoard.gameFinished();
 	}
 
 }
