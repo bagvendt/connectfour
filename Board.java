@@ -15,6 +15,7 @@ public class Board{
 		length = columns-1;
 		height = rows-1;
 		history = new Stack<Integer>();
+		finished = IGameLogic.Winner.NOT_FINISHED;
 		
 		board = new Stack[columns];
 		for (int i = 0; i < board.length; i++) {
@@ -39,6 +40,7 @@ public class Board{
 	}
 	
 	public int evaluate(IGameLogic.Winner ourPlayer){
+		
 		int utility = 0;
 		switch (finished){
 			case PLAYER1:
@@ -79,6 +81,12 @@ public class Board{
 	}
 
 	private void updateGameFinished() {
+		
+		if (history.size() == 0){
+			finished = IGameLogic.Winner.NOT_FINISHED;
+			return;
+		}
+		
 		
 		int lastCoinX = history.peek();
 		int lastCoinY = board[lastCoinX].size()-1;
@@ -187,13 +195,13 @@ public class Board{
 		finished = IGameLogic.Winner.NOT_FINISHED;
 	}
 	
-	private boolean freeColumn(int column){
+	private boolean freeValidColumn(int column){
 		return (column >= 0 && column <= length && board[column].size()-1 != height);
 	}
 	
 	public Set<Integer> actions(Integer lastBest) {
 		Set<Integer> intSet = new HashSet<Integer>(length); 
-		if (lastBest != null && freeColumn(lastBest)) intSet.add(lastBest);
+		if (lastBest != null && freeValidColumn(lastBest)) intSet.add(lastBest);
 		
 		
 		int column;
@@ -202,7 +210,7 @@ public class Board{
 				for(int j = -3; j <= 3; j++){
 					column = i+j;
 					
-					if (freeColumn(column))
+					if (freeValidColumn(column))
 						intSet.add(column);
 				}
 			}

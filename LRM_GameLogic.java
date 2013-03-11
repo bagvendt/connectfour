@@ -20,8 +20,6 @@ public class LRM_GameLogic implements IGameLogic {
 	private Board gameBoard;
 	private IGameLogic.Winner ourPlayer;
 	private IGameLogic.Winner enemyPlayer;
-	private int decision;
-	private int decisionDepth;
 	private Map<Integer,Integer> decisions;
 	
 	@Override
@@ -50,12 +48,10 @@ public class LRM_GameLogic implements IGameLogic {
 		
 		long time = System.currentTimeMillis();
 		int maxDepth = 2;
-		decisionDepth = 0;
 		decisions.clear();
 		Map<Integer, Integer> oldDecisions = new HashMap<Integer,Integer>();
-		while(maxDepth <= 12x) { // LESS THAN 9000 !
+		while(maxDepth <= 12) { // LESS THAN 9000 !
 			decisions.clear();
-			decisionDepth = maxDepth;
 			maxValue(maxDepth,Integer.MIN_VALUE,Integer.MAX_VALUE,oldDecisions);
 			maxDepth++;
 			oldDecisions.clear();
