@@ -85,7 +85,7 @@ public class Board {
 					h++;
 			}
 		}	
-		return 0;
+		return h;
 	}
 	
 	private int GetNeighbours(int playerRow, int playerCol, int horizontalIncrementer, int verticalIncrementer, IGameLogic.Winner player) 

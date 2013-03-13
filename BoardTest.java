@@ -2,6 +2,8 @@ import static org.junit.Assert.*;
 
 import org.junit.Test;
 
+import sun.security.ssl.Debug;
+
 public class BoardTest {
 
 	@Test
@@ -21,6 +23,16 @@ public class BoardTest {
 		assertEquals(0, brick1.getColumn());
 		assertEquals(0, brick2.getColumn());
 		assertEquals(0, brick3.getColumn());
+	}
+
+
+	@Test
+	public void testHeuristic1() {
+		Board board = new Board(7,7);
+		Brick brick1 = new Brick(IGameLogic.Winner.PLAYER1);
+		
+		board.layBrick(brick1, 3);
+		System.out.println(Integer.toString(board.EvaluateBoard(IGameLogic.Winner.PLAYER1)));
 	}
 
 
