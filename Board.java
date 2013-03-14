@@ -1,4 +1,3 @@
-import java.util.ArrayList;
 import java.util.*;
 
 public class Board{
@@ -7,15 +6,20 @@ public class Board{
 	private Stack<Integer> history;
 	private int height, length;
 	private IGameLogic.Winner finished;
+	private IGameLogic.Winner ourPlayer;
+	private int eval;
 	
 	/**
 	 * @param board
 	 */
-	public Board(int columns, int rows) {
+	public Board(int columns, int rows,IGameLogic.Winner ourPlayer) {
+		eval = 0;
 		length = columns-1;
 		height = rows-1;
 		history = new Stack<Integer>();
 		finished = IGameLogic.Winner.NOT_FINISHED;
+		
+		this.ourPlayer = ourPlayer;
 		
 		board = new Stack[columns];
 		for (int i = 0; i < board.length; i++) {
@@ -39,23 +43,25 @@ public class Board{
 		return finished;
 	}
 	
-	public int evaluate(IGameLogic.Winner ourPlayer){
+	public int evaluate(){
 		
 		int utility = 0;
 		switch (finished){
 			case PLAYER1:
-				utility = ourPlayer == IGameLogic.Winner.PLAYER1 ? Integer.MAX_VALUE-1 : Integer.MIN_VALUE+1;
+				utility = ourPlayer == IGameLogic.Winner.PLAYER1 ? Integer.MAX_VALUE : Integer.MIN_VALUE;
 				break;
 				
 			case PLAYER2:
-				utility = ourPlayer == IGameLogic.Winner.PLAYER2 ? Integer.MAX_VALUE-1 : Integer.MIN_VALUE+1;
+				utility = ourPlayer == IGameLogic.Winner.PLAYER2 ? Integer.MAX_VALUE : Integer.MIN_VALUE;
 				break;
 				
 			case TIE:
 				
-			case NOT_FINISHED:
+				break;
 				
-				utility = 0;
+			case NOT_FINISHED:
+				utility = eval;
+				eval++;
 				break;
 		}
 		return utility;
@@ -199,10 +205,8 @@ public class Board{
 		return (column >= 0 && column <= length && board[column].size()-1 != height);
 	}
 	
-	public Set<Integer> actions(Integer lastBest) {
+	public Set<Integer> actions() {
 		Set<Integer> intSet = new HashSet<Integer>(length); 
-		if (lastBest != null && freeValidColumn(lastBest)) intSet.add(lastBest);
-		
 		
 		int column;
 		for (int i = 0; i <= length; i++){

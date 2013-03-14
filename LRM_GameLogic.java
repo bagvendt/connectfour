@@ -20,15 +20,16 @@ public class LRM_GameLogic implements IGameLogic {
 	private Board gameBoard;
 	private IGameLogic.Winner ourPlayer;
 	private IGameLogic.Winner enemyPlayer;
-	private Map<Integer,Integer> decisions;
+	private int decision;
+	private int decisionDepth;
 	
 	@Override
 	public void initializeGame(int columns, int rows, int player) {
-		gameBoard = new Board(columns,rows);
+		decision = -1;
 		ourPlayer = player == 1 ? IGameLogic.Winner.PLAYER1 : IGameLogic.Winner.PLAYER2;
 		enemyPlayer = player == 2 ? IGameLogic.Winner.PLAYER1 : IGameLogic.Winner.PLAYER2;
 		
-		decisions = new HashMap<Integer,Integer>();
+		gameBoard = new Board(columns,rows,ourPlayer);
 	}
 
 	/* (non-Javadoc)
@@ -47,69 +48,74 @@ public class LRM_GameLogic implements IGameLogic {
 	public int decideNextMove() {
 		
 		long time = System.currentTimeMillis();
-		int maxDepth = 2;
-		decisions.clear();
-		Map<Integer, Integer> oldDecisions = new HashMap<Integer,Integer>();
-		while(maxDepth <= 12) { // LESS THAN 9000 !
-			decisions.clear();
-			maxValue(maxDepth,Integer.MIN_VALUE,Integer.MAX_VALUE,oldDecisions);
+		int maxDepth = 10;
+		System.out.println("Starting calculation");
+		while(maxDepth <= 10) {
+			decisionDepth = maxDepth;
+			maxValue(maxDepth,Integer.MIN_VALUE,Integer.MAX_VALUE);
 			maxDepth++;
-			oldDecisions.clear();
-			oldDecisions.putAll(decisions);
 		}
 		System.out.println("Decision took (ms): " + Long.toString(System.currentTimeMillis()-time));
-		return oldDecisions.get(maxDepth-1);
+		return decision;
 	}
 	
-	private int maxValue(int depth,int alpha,int beta, Map<Integer, Integer> oldDecision){
+	private int maxValue(int depth,int alpha,int beta){
 		
-		
-		if (gameBoard.isGameFinished() || depth == 0) return gameBoard.evaluate(ourPlayer);
+		if (gameBoard.isGameFinished() || depth == 0) return gameBoard.evaluate();
 		
 		int v = Integer.MIN_VALUE;
 		int tempValue;
-		for (int column : gameBoard.actions(oldDecision.get(depth-1))){ // Should be arranged according to values from previous iteration
+		for (int column : gameBoard.actions()){ // Should be arranged according to values from previous iteration
 			
 			gameBoard.layCoin(column, ourPlayer);
-			tempValue = minValue(depth-1,alpha,beta,oldDecision);
+			tempValue = minValue(depth-1,alpha,beta) / 10 * 9; // Decreases value over time
+			//if (depth == decisionDepth) System.out.println("Column: " + Integer.toString(column) + "\nValue: " + Integer.toString(tempValue) + "\n");
 			gameBoard.removeLastCoin();
 			if (tempValue > v){
 				v = tempValue;
-				decisions.put(depth, column);
+				if (depth == decisionDepth)
+					decision = column;
 			}
 			
 			if (v >= beta){
+				System.out.println("Beta-cut");
+				System.out.println(v);
 				return v;
 			}
 			alpha = Math.max(v,alpha);
 		}
+		//System.out.println(v);
 		return v;
 	}
 	
-	private int minValue(int depth,int alpha,int beta, Map<Integer,Integer> oldDecision){
+	private int minValue(int depth,int alpha,int beta){
 		
 		if (gameBoard.isGameFinished() || depth == 0){
-			return (gameBoard.evaluate(ourPlayer));
+			return (gameBoard.evaluate());
 		}
 		
 		int v = Integer.MAX_VALUE;
 		int tempValue;
-		for (int column : gameBoard.actions(oldDecision.get(depth-1))){ // Should be arranged according to values from previous iteration
+		for (int column : gameBoard.actions()){ // Should be arranged according to values from previous iteration
 			
 			gameBoard.layCoin(column, enemyPlayer);
-			tempValue = maxValue(depth-1,alpha,beta,oldDecision);
+			tempValue = maxValue(depth-1,alpha,beta) / 10 * 9; // Decreases value over time
 			gameBoard.removeLastCoin();
 			
 			if (tempValue < v){
 				v = tempValue;
-				decisions.put(depth, column);
+				if (depth == decisionDepth)
+					decision = column;
 			}
 			
 			if (v <= alpha){
+				System.out.println("Alpha-cut");
+				System.out.println(v);
 				return v;
 			}
 			beta = Math.min(v,beta);
 		}
+		//System.out.println(v);
 		return v;
 	}
 
@@ -118,7 +124,7 @@ public class LRM_GameLogic implements IGameLogic {
 	 */
 	@Override
 	public Winner gameFinished() {
-		// TODO Auto-generated method stub
+
 		return gameBoard.gameFinished();
 	}
 
