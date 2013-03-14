@@ -48,9 +48,9 @@ public class LRM_GameLogic implements IGameLogic {
 	public int decideNextMove() {
 		
 		long time = System.currentTimeMillis();
-		int maxDepth = 10;
+		int maxDepth = 3;
 		System.out.println("Starting calculation");
-		while(maxDepth <= 10) {
+		while(maxDepth <= 3) {
 			decisionDepth = maxDepth;
 			maxValue(maxDepth,Integer.MIN_VALUE,Integer.MAX_VALUE);
 			maxDepth++;

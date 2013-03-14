@@ -77,7 +77,7 @@ public class Board {
 		for (Stack<IGameLogic.Winner> column : board)
 		{
 			for (IGameLogic.Winner winner : column) {
-				double distance = Math.sqrt(row*row-midX*midX+col*col-midY*midY);
+				double distance = Math.sqrt(Math.pow(row-midX, 2)+Math.pow(col-midY,2));
 				if (winner.equals(ourPlayer)) 
 				{
 					myDistance += distance;
@@ -89,7 +89,7 @@ public class Board {
 			}
 		col++;
 		}
-		
+		System.out.println("distance: " + (otherDistance - myDistance));
 		return otherDistance - myDistance;
 	}
 
