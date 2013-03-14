@@ -69,7 +69,6 @@ public class LRM_GameLogic implements IGameLogic {
 			
 			gameBoard.layCoin(column, ourPlayer);
 			tempValue = minValue(depth-1,alpha,beta) / 10 * 9; // Decreases value over time
-			//if (depth == decisionDepth) System.out.println("Column: " + Integer.toString(column) + "\nValue: " + Integer.toString(tempValue) + "\n");
 			gameBoard.removeLastCoin();
 			if (tempValue > v){
 				v = tempValue;
@@ -79,7 +78,6 @@ public class LRM_GameLogic implements IGameLogic {
 			
 			if (v >= beta){
 				System.out.println("Beta-cut");
-				System.out.println(v);
 				return v;
 			}
 			alpha = Math.max(v,alpha);
@@ -110,7 +108,6 @@ public class LRM_GameLogic implements IGameLogic {
 			
 			if (v <= alpha){
 				System.out.println("Alpha-cut");
-				System.out.println(v);
 				return v;
 			}
 			beta = Math.min(v,beta);
