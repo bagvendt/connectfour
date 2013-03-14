@@ -1,7 +1,4 @@
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.Stack;
 
 /**
  * 
@@ -22,6 +19,8 @@ public class LRM_GameLogic implements IGameLogic {
 	private IGameLogic.Winner enemyPlayer;
 	private int decision;
 	private int decisionDepth;
+	private double hit;
+	private double miss;
 	
 	@Override
 	public void initializeGame(int columns, int rows, int player) {
@@ -48,14 +47,18 @@ public class LRM_GameLogic implements IGameLogic {
 	public int decideNextMove() {
 		
 		long time = System.currentTimeMillis();
-		int maxDepth = 3;
+		int maxDepth = 10;
 		System.out.println("Starting calculation");
-		while(maxDepth <= 3) {
+		while(maxDepth <= 15 && System.currentTimeMillis() - time < 9000) {
+			gameBoard.clearCache();
 			decisionDepth = maxDepth;
 			maxValue(maxDepth,Integer.MIN_VALUE,Integer.MAX_VALUE);
 			maxDepth++;
 		}
 		System.out.println("Decision took (ms): " + Long.toString(System.currentTimeMillis()-time));
+		System.out.println("Hit/miss:" + hit/miss);
+		System.out.println("Hitrate:" + (hit/(miss+hit)));
+		System.out.println("Depth: " + (maxDepth-1));
 		return decision;
 	}
 	
@@ -68,16 +71,27 @@ public class LRM_GameLogic implements IGameLogic {
 		for (int column : gameBoard.actions()){ // Should be arranged according to values from previous iteration
 			
 			gameBoard.layCoin(column, ourPlayer);
-			tempValue = minValue(depth-1,alpha,beta) / 10 * 9; // Decreases value over time
+			if (gameBoard.isHashed(depth)){
+				//System.out.println("Using hash");
+				tempValue = gameBoard.getHashUtility(depth);
+				hit++;
+			}
+			else{
+				tempValue = minValue(depth-1,alpha,beta) / 10 * 9;
+				gameBoard.addThisToCache(depth, tempValue);
+				miss++;
+			}
+			 // Decreases value over time
 			gameBoard.removeLastCoin();
+			if (depth == decisionDepth)
+				System.out.println("Column: " + Integer.toString(column) + "\nValue: " + Integer.toString(tempValue));
 			if (tempValue > v){
 				v = tempValue;
-				if (depth == decisionDepth)
-					decision = column;
+				if (depth == decisionDepth) decision = column;
 			}
 			
 			if (v >= beta){
-				System.out.println("Beta-cut");
+				//System.out.println("Beta-cut");
 				return v;
 			}
 			alpha = Math.max(v,alpha);
@@ -97,7 +111,15 @@ public class LRM_GameLogic implements IGameLogic {
 		for (int column : gameBoard.actions()){ // Should be arranged according to values from previous iteration
 			
 			gameBoard.layCoin(column, enemyPlayer);
-			tempValue = maxValue(depth-1,alpha,beta) / 10 * 9; // Decreases value over time
+			if (gameBoard.isHashed(depth)){
+				tempValue = gameBoard.getHashUtility(depth);
+				hit++;
+			}
+			else{
+				tempValue = maxValue(depth-1,alpha,beta) / 10 * 9; // Decreases value over time
+				gameBoard.addThisToCache(tempValue,depth);
+				miss++;
+			}
 			gameBoard.removeLastCoin();
 			
 			if (tempValue < v){
@@ -107,7 +129,7 @@ public class LRM_GameLogic implements IGameLogic {
 			}
 			
 			if (v <= alpha){
-				System.out.println("Alpha-cut");
+				//System.out.println("Alpha-cut");
 				return v;
 			}
 			beta = Math.min(v,beta);
