@@ -21,6 +21,7 @@ public class LRM_GameLogic implements IGameLogic {
 	private int decisionDepth;
 	private double hit;
 	private double miss;
+	private long startTime;
 	
 	@Override
 	public void initializeGame(int columns, int rows, int player) {
@@ -46,16 +47,18 @@ public class LRM_GameLogic implements IGameLogic {
 	@Override
 	public int decideNextMove() {
 		
-		long time = System.currentTimeMillis();
+		startTime = System.currentTimeMillis();
 		int maxDepth = 10;
 		System.out.println("Starting calculation");
-		while(maxDepth <= 15 && System.currentTimeMillis() - time < 9000) {
+		while(System.currentTimeMillis() - startTime < 9999) {
+			hit = 0;
+			miss = 0;
 			gameBoard.clearCache();
 			decisionDepth = maxDepth;
 			maxValue(maxDepth,Integer.MIN_VALUE,Integer.MAX_VALUE);
 			maxDepth++;
 		}
-		System.out.println("Decision took (ms): " + Long.toString(System.currentTimeMillis()-time));
+		System.out.println("Decision took (ms): " + Long.toString(System.currentTimeMillis()-startTime));
 		System.out.println("Hit/miss:" + hit/miss);
 		System.out.println("Hitrate:" + (hit/(miss+hit)));
 		System.out.println("Depth: " + (maxDepth-1));
@@ -63,6 +66,7 @@ public class LRM_GameLogic implements IGameLogic {
 	}
 	
 	private int maxValue(int depth,int alpha,int beta){
+		
 		
 		if (gameBoard.isGameFinished() || depth == 0) return gameBoard.evaluate();
 		
