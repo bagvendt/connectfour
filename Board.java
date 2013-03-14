@@ -1,5 +1,22 @@
 import java.util.*;
 
+import com.sun.tools.javac.util.Pair;
+
+class Decision implements Comparable<Decision> {
+    int column;
+    int utility;
+
+    public Decision(int column, int utility) {
+        this.column = column;
+        this.utility = utility;
+    }
+
+    @Override
+    public int compareTo(Decision o) {
+        return utility < o.utility ? -1 : utility > o.utility ? 1 : 0;
+    }
+}
+
 public class Board {
 
 	private Stack<IGameLogic.Winner>[] board;
@@ -8,17 +25,18 @@ public class Board {
 	private IGameLogic.Winner finished;
 	private IGameLogic.Winner ourPlayer;
 	private IGameLogic.Winner enemyPlayer;
-	private int eval;
 	private HashMap<String,Integer> cache;
+	private HashMap<String,Integer> oldCache;
 
 	/**
 	 * @param board
 	 */
 	public Board(int columns, int rows, IGameLogic.Winner ourPlayer,
 			IGameLogic.Winner enemyPlayer) {
-		eval = 0;
 		length = columns - 1;
 		height = rows - 1;
+		cache = new HashMap<String,Integer>();
+		oldCache = new HashMap<String,Integer>();
 		history = new Stack<Integer>();
 		finished = IGameLogic.Winner.NOT_FINISHED;
 		this.ourPlayer = ourPlayer;
@@ -34,7 +52,9 @@ public class Board {
 		return cache.containsKey(hashThis(depth));
 	}
 	
+	@SuppressWarnings("unchecked")
 	public void clearCache(){
+		oldCache = (HashMap<String, Integer>) cache.clone();
 		cache.clear();
 	}
 	
@@ -76,6 +96,48 @@ public class Board {
 		return finished;
 	}
 
+	public Set<Integer> actions(int depth, IGameLogic.Winner player){
+			
+			Set<Integer> initSet = actions();
+			Set<Integer> intSet = new LinkedHashSet<Integer>(length);
+			
+			String hash;
+			List<Decision> decisionList = new ArrayList<Decision>();
+			
+			for (int column : initSet){
+				
+				layCoin(column, player);
+				hash = hashThis(depth-1);
+				if(oldCache.containsKey(hash)){
+					//System.out.println("Getting actions from hash:" + column);
+					decisionList.add(new Decision(column,oldCache.get(hash)));
+				}
+				
+				removeLastCoin();
+			}
+			
+			if (decisionList.size() == 0) return initSet;
+			else{
+				
+				Collections.sort(decisionList);
+				if (player == enemyPlayer){
+					//System.out.println("Start");
+					for(int i = 0; i < decisionList.size()-1; i++){
+						intSet.add(decisionList.get(i).column);
+						//System.out.println(i + "/" + decisionList.get(i).utility);
+					}
+					//System.out.println("Slut");
+				}
+				else{
+					for(int i = decisionList.size()-1; i >= 0; i--){
+						intSet.add(decisionList.get(i).column);
+					}
+				}
+				
+				return intSet;
+			}
+		}
+	
 	public int evaluate() {
 
 		int utility = 0;
@@ -495,8 +557,10 @@ public class Board {
 	private boolean freeValidColumn(int column) {
 		return (column >= 0 && column <= length && board[column].size() - 1 != height);
 	}
+	
+	
 
-	public Set<Integer> actions() {
+	private Set<Integer> actions() {
 		Set<Integer> intSet = new HashSet<Integer>(length);
 
 		int column;

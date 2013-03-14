@@ -72,7 +72,7 @@ public class LRM_GameLogic implements IGameLogic {
 		
 		int v = Integer.MIN_VALUE;
 		int tempValue;
-		for (int column : gameBoard.actions()){ // Should be arranged according to values from previous iteration
+		for (int column : gameBoard.actions(depth,ourPlayer)){ // Should be arranged according to values from previous iteration
 			
 			gameBoard.layCoin(column, ourPlayer);
 			if (gameBoard.isHashed(depth)){
@@ -112,7 +112,7 @@ public class LRM_GameLogic implements IGameLogic {
 		
 		int v = Integer.MAX_VALUE;
 		int tempValue;
-		for (int column : gameBoard.actions()){ // Should be arranged according to values from previous iteration
+		for (int column : gameBoard.actions(depth,enemyPlayer)){ // Should be arranged according to values from previous iteration
 			
 			gameBoard.layCoin(column, enemyPlayer);
 
