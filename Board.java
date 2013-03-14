@@ -68,7 +68,7 @@ public class Board {
 		return utility;
 	}
 
-	private int EuclidianDistance() 
+	private double EuclidianDistance() 
 	{
 		double myDistance = 0, otherDistance = 0;
 		int midX = (int)(length/2);
@@ -90,7 +90,7 @@ public class Board {
 		col++;
 		}
 		
-		return (int)(myDistance - otherDistance);
+		return otherDistance - myDistance;
 	}
 
 	private boolean positionIsValid(int column, int row,
