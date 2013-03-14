@@ -90,9 +90,7 @@ public class Board {
 		col++;
 		}
 		
-		if (myDistance < otherDistance) return 1;
-		else if (otherDistance > myDistance) return -1;
-		return 0;
+		return (int)(myDistance - otherDistance);
 	}
 
 	private boolean positionIsValid(int column, int row,
