@@ -29,7 +29,7 @@ public class LRM_GameLogic implements IGameLogic {
 		ourPlayer = player == 1 ? IGameLogic.Winner.PLAYER1 : IGameLogic.Winner.PLAYER2;
 		enemyPlayer = player == 2 ? IGameLogic.Winner.PLAYER1 : IGameLogic.Winner.PLAYER2;
 		
-		gameBoard = new Board(columns,rows,ourPlayer);
+		gameBoard = new Board(columns,rows,ourPlayer, enemyPlayer);
 	}
 
 	/* (non-Javadoc)
@@ -48,9 +48,9 @@ public class LRM_GameLogic implements IGameLogic {
 	public int decideNextMove() {
 		
 		long time = System.currentTimeMillis();
-		int maxDepth = 3;
+		int maxDepth = 10;
 		System.out.println("Starting calculation");
-		while(maxDepth <= 3) {
+		while(maxDepth <= 10) {
 			decisionDepth = maxDepth;
 			maxValue(maxDepth,Integer.MIN_VALUE,Integer.MAX_VALUE);
 			maxDepth++;
@@ -78,8 +78,6 @@ public class LRM_GameLogic implements IGameLogic {
 			}
 			
 			if (v >= beta){
-				System.out.println("Beta-cut");
-				System.out.println(v);
 				return v;
 			}
 			alpha = Math.max(v,alpha);
@@ -99,7 +97,7 @@ public class LRM_GameLogic implements IGameLogic {
 		for (int column : gameBoard.actions()){ // Should be arranged according to values from previous iteration
 			
 			gameBoard.layCoin(column, enemyPlayer);
-			tempValue = maxValue(depth-1,alpha,beta) / 10 * 9; // Decreases value over time
+			tempValue = maxValue(depth-1,alpha,beta); // Decreases value over time
 			gameBoard.removeLastCoin();
 			
 			if (tempValue < v){
@@ -109,8 +107,6 @@ public class LRM_GameLogic implements IGameLogic {
 			}
 			
 			if (v <= alpha){
-				System.out.println("Alpha-cut");
-				System.out.println(v);
 				return v;
 			}
 			beta = Math.min(v,beta);
