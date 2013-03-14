@@ -9,11 +9,11 @@ public class Board {
 	private IGameLogic.Winner ourPlayer;
 	private IGameLogic.Winner enemyPlayer;
 	private int eval;
+	private HashMap<String,Integer> cache;
 
 	/**
 	 * @param board
 	 */
-
 	public Board(int columns, int rows, IGameLogic.Winner ourPlayer,
 			IGameLogic.Winner enemyPlayer) {
 		eval = 0;
@@ -21,7 +21,6 @@ public class Board {
 		height = rows - 1;
 		history = new Stack<Integer>();
 		finished = IGameLogic.Winner.NOT_FINISHED;
-
 		this.ourPlayer = ourPlayer;
 		this.enemyPlayer = enemyPlayer;
 
@@ -30,6 +29,36 @@ public class Board {
 			board[i] = new Stack<IGameLogic.Winner>();
 		}
 	}
+	
+	public boolean isHashed(int depth){
+		return cache.containsKey(hashThis(depth));
+	}
+	
+	public void clearCache(){
+		cache.clear();
+	}
+	
+	public void addThisToCache(int depth,int value){
+		cache.put(hashThis(depth), value);
+	}
+	
+	public int getHashUtility(int depth){
+		return cache.get(hashThis(depth));
+	}
+	
+	private String hashThis(int depth){
+		String hash = "";
+		for (Stack<IGameLogic.Winner> stack : board ){
+			for (IGameLogic.Winner player  : stack){
+				hash += player == ourPlayer ? "1" : "2";
+			}
+			hash += "0";
+		}
+		
+		hash += depth;
+		return hash;
+	}
+
 
 	public void layCoin(int column, IGameLogic.Winner player) {
 		board[column].push(player);
@@ -62,7 +91,9 @@ public class Board {
 			break;
 
 		case TIE:
-
+			utility = 0;
+			break;
+			
 		case NOT_FINISHED:
 			// utility += EuclidianDistance();
 			utility += CalculateHeuristic();
