@@ -141,6 +141,7 @@ public class Board {
 	public int evaluate() {
 
 		int utility = 0;
+		// This comment makes no sence
 		switch (finished) {
 		case PLAYER1:
 			utility = ourPlayer == IGameLogic.Winner.PLAYER1 ? Integer.MAX_VALUE - 1
