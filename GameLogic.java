@@ -29,5 +29,9 @@ public class GameLogic implements IGameLogic {
         //TODO Write your implementation for this method
         return 0;
     }
-
+    
+    public int GetID()
+    {
+    	return playerID;  	
+    }
 }

@@ -55,7 +55,7 @@ public class Board{
 				
 			case NOT_FINISHED:
 				
-				utility = 0;
+				utility += BrickNeighborCount();
 				break;
 		}
 		return utility;
@@ -69,14 +69,39 @@ public class Board{
 		// space not taken by coin
 		if (board[column].size()-1 < row) return false;
 		
-		// coin is position is not players;
+		// coin is position is not players;Problem
 		if(board[column].get(row) != player) return false;
 		
 		// If nothing has stopped you from getting here, this is your coin
 		return true;
 	}
 	
-	public boolean isGameFinished(){
+	//Check to see if position is out of ranged, used for heuristic methods
+	private boolean positionIsOutOfRange(int column,int row)
+	{
+		if (column < 0 || column > length || row < 0 || row > height) return true;
+		
+		return false;
+	}
+	
+	//Check to see if position is empty, used for heuristic methods
+	private boolean positionIsEmpty(int column,int row)
+	{
+		if (board[column].size()-1 < row) return true;
+		
+		return false;	
+	}
+	
+	//Check to see if position is mine, used for heuristic methods
+	private boolean positionIsMine(int column,int row, IGameLogic.Winner player)
+	{	
+		if(board[column].get(row) == player) return true;
+		
+		return false;
+	}
+		
+	public boolean isGameFinished()
+	{
 		return finished != IGameLogic.Winner.NOT_FINISHED;
 	}
 
@@ -220,7 +245,94 @@ public class Board{
 		return intSet;
 	}
 	
+	public int BrickNeighborCount()
+	{
+		int heuristic = 0;
+		
+		int lastCoinX = history.peek();
+		int lastCoinY = board[lastCoinX].size()-1;
+		IGameLogic.Winner player = board[lastCoinX].get(lastCoinY);
+		
+		int NE = 1;
+		int E  = 1;
+		int SE = 1;
+		int S  = 1;
+		int SW = 1;
+		int W  = 1;
+		int NW = 1;
+		
+		//Check NE
+		for(int i = 1; i < 4; i++)
+		{		
+			if(positionIsOutOfRange(lastCoinX+i, lastCoinY+i)) break;
+			if(positionIsEmpty(lastCoinX+i, lastCoinY+i)) continue;
+			if(positionIsMine(lastCoinX+i, lastCoinY+i, player)) NE++;
+			else break;	
+		}
+		//Check E
+		for(int i = 1; i < 4; i++)
+		{		
+			if(positionIsOutOfRange(lastCoinX+i, lastCoinY)) break;
+			if(positionIsEmpty(lastCoinX+i, lastCoinY)) continue;
+			if(positionIsMine(lastCoinX+i, lastCoinY, player)) E++;
+			else break;	
+		}
+		//Check SE
+		for(int i = 1; i < 4; i++)
+		{		
+			if(positionIsOutOfRange(lastCoinX+i, lastCoinY-i)) break;
+			if(positionIsEmpty(lastCoinX+i, lastCoinY-i)) continue;
+			if(positionIsMine(lastCoinX+i, lastCoinY-i, player)) SE++;
+			else break;	
+		}
+		//Check S
+		for(int i = 1; i < 4; i++)
+		{		
+			if(positionIsOutOfRange(lastCoinX, lastCoinY-i)) break;
+			if(positionIsEmpty(lastCoinX, lastCoinY-i)) continue;
+			if(positionIsMine(lastCoinX, lastCoinY-i, player)) S++;
+			else break;	
+		}
+		//Check SW
+		for(int i = 1; i < 4; i++)
+		{		
+			if(positionIsOutOfRange(lastCoinX-i, lastCoinY-i)) break;
+			if(positionIsEmpty(lastCoinX-i, lastCoinY-i)) continue;
+			if(positionIsMine(lastCoinX-i, lastCoinY-i, player)) SW++;
+			else break;	
+		}
+		//Check W
+		for(int i = 1; i < 4; i++)
+		{		
+			if(positionIsOutOfRange(lastCoinX-i, lastCoinY)) break;
+			if(positionIsEmpty(lastCoinX-i, lastCoinY)) continue;
+			if(positionIsMine(lastCoinX-i, lastCoinY, player)) W++;
+			else break;	
+		}
+		//Check NW
+		for(int i = 1; i < 4; i++)
+		{		
+			if(positionIsOutOfRange(lastCoinX-i, lastCoinY+i)) break;
+			if(positionIsEmpty(lastCoinX-i, lastCoinY+i)) continue;
+			if(positionIsMine(lastCoinX-i, lastCoinY+i, player)) NW++;
+			else break;	
+		}
+		
+		int heuristicCompass[] = new int[]{NE, E, SE, S, SW, W, NW};
+		
+		for(int i : heuristicCompass)
+		{		
+			if(i > heuristic) heuristic = i;
+		}
+		
+		return heuristic;		
+	}
 	
+	public int BlockingOpponentPaths()
+	{
+		int heuristic = 0;
+		
+		return heuristic;
+	}
 	
-
 }
