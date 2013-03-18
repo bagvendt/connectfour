@@ -98,9 +98,7 @@ public class LRM_GameLogic implements IGameLogic {
 				// If we are at the top level, we correct our decision to reflect it.
 				if (depth == decisionDepth) decision = column;
 			}
-			if (depth == decisionDepth){
-				System.out.println("Column: " + column + "\nUtility: " + tempValue + "\n");
-			}
+
 			
 			if (v >= beta){
 				return v;
