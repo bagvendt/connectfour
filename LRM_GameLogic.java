@@ -1,3 +1,5 @@
+import java.util.List;
+
 
 
 /**
@@ -50,7 +52,7 @@ public class LRM_GameLogic implements IGameLogic {
 		long startTime = System.currentTimeMillis();
 		
 		// We start with a depth of 10, to save some time.
-		int maxDepth = 10;
+		int maxDepth = 5;
 		
 		while(System.currentTimeMillis() - startTime < 9000) {
 			
@@ -59,6 +61,7 @@ public class LRM_GameLogic implements IGameLogic {
 			maxValue(maxDepth,Integer.MIN_VALUE,Integer.MAX_VALUE);
 			maxDepth++;
 		}
+		System.out.println(decision);
 		return decision;
 	}
 	
@@ -70,7 +73,11 @@ public class LRM_GameLogic implements IGameLogic {
 		int v = Integer.MIN_VALUE;
 		int tempValue;
 		// Get a set of (ordered) actions to loop through
-		for (int column : gameBoard.actions(depth,ourPlayer)){
+		List<Integer> validColumns = gameBoard.actions(depth,ourPlayer); 
+		if (depth == decisionDepth){ System.out.println(validColumns);
+		
+		}
+		for (int column : validColumns){
 			
 			gameBoard.layCoin(column, ourPlayer);
 			
@@ -80,7 +87,7 @@ public class LRM_GameLogic implements IGameLogic {
 			}
 			// Otherwise calculate it and add it to the cache
 			else{ 
-				tempValue = minValue(depth-1,alpha,beta);
+				tempValue = minValue(depth,alpha,beta);
 				gameBoard.addThisToCache(depth, tempValue);
 			}
 			
@@ -91,7 +98,9 @@ public class LRM_GameLogic implements IGameLogic {
 				// If we are at the top level, we correct our decision to reflect it.
 				if (depth == decisionDepth) decision = column;
 			}
-			
+			if (depth == decisionDepth){
+				System.out.println("Column: " + column + "\nUtility: " + tempValue + "\n");
+			}
 			
 			if (v >= beta){
 				return v;

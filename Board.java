@@ -103,6 +103,7 @@ public class Board {
 			
 			String hash;
 			List<Decision> decisionList = new ArrayList<Decision>();
+			Set<Integer> notDecisionSet = new HashSet<Integer>();
 			
 			for (int column : initSet){
 				
@@ -111,6 +112,9 @@ public class Board {
 				if(oldCache.containsKey(hash)){
 					//System.out.println("Getting actions from hash:" + column);
 					decisionList.add(new Decision(column,oldCache.get(hash)));
+				}
+				else{
+					notDecisionSet.add(column);
 				}
 				
 				removeLastCoin();
@@ -132,6 +136,7 @@ public class Board {
 				}
 				initSet.clear();
 				initSet.addAll(intSet);
+				initSet.addAll(notDecisionSet);
 				return initSet;
 			}
 		}
@@ -155,8 +160,8 @@ public class Board {
 			break;
 			
 		case NOT_FINISHED:
-			//utility += EuclidianDistance();
-			utility += CalculateHeuristic();
+			utility += EuclidianDistance();
+			// utility += CalculateHeuristic();
 			break;
 		}
 		return utility;
@@ -392,13 +397,14 @@ public class Board {
 
 	private double EuclidianDistance() {
 		double myDistance = 0, otherDistance = 0;
+		//System.out.println(length);
 		int midX = (int) (length / 2);
 		int midY = (int) (height / 2);
 		int col = 0, row = 0;
 		for (Stack<IGameLogic.Winner> column : board) {
 			for (IGameLogic.Winner winner : column) {
-				double distance = Math.sqrt(Math.pow(row - midX, 2)
-						+ Math.pow(col - midY, 2));
+				double distance = Math.sqrt(Math.pow(col - midX, 2)
+						+ Math.pow(row - midY, 2));
 				if (winner.equals(ourPlayer)) {
 					myDistance += distance;
 				} else {
@@ -409,7 +415,7 @@ public class Board {
 			col++;
 		}
 		//System.out.println("\nmyDistance: " + myDistance);
-		return (myDistance - otherDistance) * -1000;
+		return (otherDistance - myDistance) * 1000;
 	}
 
 	private boolean positionOutOfBounds(int column, int row) {
