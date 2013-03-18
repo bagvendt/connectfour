@@ -48,7 +48,7 @@ public class Board {
 		}
 	}
 	
-	public boolean isHashed(int depth){
+	public boolean isCached(int depth){
 		return cache.containsKey(hashThis(depth));
 	}
 	
@@ -96,9 +96,9 @@ public class Board {
 		return finished;
 	}
 
-	public Set<Integer> actions(int depth, IGameLogic.Winner player){
+	public List<Integer> actions(int depth, IGameLogic.Winner player){
 			
-			Set<Integer> initSet = actions();
+			List<Integer> initSet = actions();
 			Set<Integer> intSet = new LinkedHashSet<Integer>(length);
 			
 			String hash;
@@ -121,36 +121,33 @@ public class Board {
 				
 				Collections.sort(decisionList);
 				if (player == enemyPlayer){
-					//System.out.println("Start");
 					for(int i = 0; i < decisionList.size()-1; i++){
 						intSet.add(decisionList.get(i).column);
-						//System.out.println(i + "/" + decisionList.get(i).utility);
 					}
-					//System.out.println("Slut");
 				}
 				else{
 					for(int i = decisionList.size()-1; i >= 0; i--){
 						intSet.add(decisionList.get(i).column);
 					}
 				}
-				
-				return intSet;
+				initSet.clear();
+				initSet.addAll(intSet);
+				return initSet;
 			}
 		}
 	
 	public int evaluate() {
 
 		int utility = 0;
-		// This comment makes no sence
 		switch (finished) {
 		case PLAYER1:
-			utility = ourPlayer == IGameLogic.Winner.PLAYER1 ? Integer.MAX_VALUE - 1
-					: Integer.MIN_VALUE + 1;
+			utility = ourPlayer == IGameLogic.Winner.PLAYER1 ? Integer.MAX_VALUE
+					: Integer.MIN_VALUE;
 			break;
 
 		case PLAYER2:
-			utility = ourPlayer == IGameLogic.Winner.PLAYER2 ? Integer.MAX_VALUE - 1
-					: Integer.MIN_VALUE + 1;
+			utility = ourPlayer == IGameLogic.Winner.PLAYER2 ? Integer.MAX_VALUE
+					: Integer.MIN_VALUE;
 			break;
 
 		case TIE:
@@ -158,7 +155,7 @@ public class Board {
 			break;
 			
 		case NOT_FINISHED:
-			// utility += EuclidianDistance();
+			//utility += EuclidianDistance();
 			utility += CalculateHeuristic();
 			break;
 		}
@@ -411,7 +408,8 @@ public class Board {
 			}
 			col++;
 		}
-		return (otherDistance - myDistance) * 1000;
+		//System.out.println("\nmyDistance: " + myDistance);
+		return (myDistance - otherDistance) * -1000;
 	}
 
 	private boolean positionOutOfBounds(int column, int row) {
@@ -561,7 +559,7 @@ public class Board {
 	
 	
 
-	private Set<Integer> actions() {
+	private List<Integer> actions() {
 		Set<Integer> intSet = new HashSet<Integer>(length);
 
 		int column;
@@ -577,8 +575,9 @@ public class Board {
 		}
 		if (intSet.size() == 0 && finished != IGameLogic.Winner.TIE)
 			intSet.add(length / 2);
-
-		return intSet;
+		List<Integer> intList = new ArrayList<Integer>(intSet);
+		Collections.shuffle(intList);
+		return intList;
 	}
 
 }
