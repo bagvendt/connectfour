@@ -54,7 +54,7 @@ public class LRM_GameLogic implements IGameLogic {
 		
 		long startTime = System.currentTimeMillis();
 		
-		// We start with a depth of 10, to save some time.
+		// We start with a depth of 4, to save some time - We operate in moves, not ply
 		int maxDepth = 5;
 		
 		while(System.currentTimeMillis() - startTime < 9000) {
