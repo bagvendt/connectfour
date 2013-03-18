@@ -1,21 +1,7 @@
 import java.util.*;
 
-import com.sun.tools.javac.util.Pair;
 
-class Decision implements Comparable<Decision> {
-    int column;
-    int utility;
 
-    public Decision(int column, int utility) {
-        this.column = column;
-        this.utility = utility;
-    }
-
-    @Override
-    public int compareTo(Decision o) {
-        return utility < o.utility ? -1 : utility > o.utility ? 1 : 0;
-    }
-}
 
 public class Board {
 
