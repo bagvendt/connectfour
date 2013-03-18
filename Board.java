@@ -4,7 +4,13 @@ import java.util.*;
 
 /**
  * 
- * A board for handleing the 
+ * A board that handles:
+ *  - Two different heuristic functions. Euclidian distance and a more connect four specific heuristic.
+ *  - Caching of different game states
+ *  - Unique hash code of a game state
+ *  - Available actions
+ *  - Move ordering of available actions
+ *  - Terminal state check, and underlying helper functions.
  *
  */
 public class Board {
@@ -19,7 +25,12 @@ public class Board {
 	private HashMap<String,Integer> oldCache;
 
 	/**
-	 * @param board
+	 * Creates a new board.
+	 * 
+	 * @param columns  Number of columns on the board.
+	 * @param rows Number of rows on the board.
+	 * @param ourPlayer The IGameLogic enum of the player we are.
+	 * @param enemyPlayer The oposite enum of ourPlayer.
 	 */
 	public Board(int columns, int rows, IGameLogic.Winner ourPlayer,
 			IGameLogic.Winner enemyPlayer) {
@@ -38,20 +49,37 @@ public class Board {
 		}
 	}
 	
+	/**
+	 * Does the current state exist in the cache.
+	 * @param depth depth of the game state.
+	 * @return Boolean indication wheather the state exists in cache.
+	 */
 	public boolean isCached(int depth){
 		return cache.containsKey(hashThis(depth));
 	}
-	
+	/**
+	 * Clears the cache, and stores the old state.
+	 */
 	@SuppressWarnings("unchecked")
 	public void clearCache(){
 		oldCache = (HashMap<String, Integer>) cache.clone();
 		cache.clear();
 	}
-	
+	/**
+	 * 
+	 * Add utility value to cache
+	 * @param depth At which depth is the cache calculated.
+	 * @param value The value of the utility value.
+	 */
 	public void addThisToCache(int depth,int value){
 		cache.put(hashThis(depth), value);
 	}
 	
+	/**
+	 * Lookup the utility value 
+	 * @param depth The depth of the state.
+	 * @return The corresponding utility value
+	 */
 	public int getHashUtility(int depth){
 		return cache.get(hashThis(depth));
 	}
@@ -69,23 +97,38 @@ public class Board {
 		return hash;
 	}
 
-
+	/**
+	 * Lay a coin on the board
+	 * @param column At which column to lay the coin.
+	 * @param player The player that owns the coin
+	 */
 	public void layCoin(int column, IGameLogic.Winner player) {
 		board[column].push(player);
 		history.push(column);
 		updateGameFinished();
 	}
-
+	/**
+	 * Remove the latest coin that was added to the board.
+	 */
 	public void removeLastCoin() {
 		int lastColumn = history.pop();
 		board[lastColumn].pop();
 		updateGameFinished();
 	}
-
+	/**
+	 * Returns the state of the game
+	 * @return The IGameLogic enumeration, TIE, NOTFINISHED, PLAYER1 or PLAYER2
+	 */
 	public IGameLogic.Winner gameFinished() {
 		return finished;
 	}
-
+	
+	/**
+	 * What actions can be carried out in this game state.
+	 * @param depth At what depth is the board
+	 * @param player Which player has the turn
+	 * @return An array of columns/actions
+	 */
 	public List<Integer> actions(int depth, IGameLogic.Winner player){
 			
 			List<Integer> initSet = actions();
@@ -130,7 +173,10 @@ public class Board {
 				return initSet;
 			}
 		}
-	
+	/**
+	 * Evaluates the current game state.
+	 * @return Utility value of the current state.
+	 */
 	public int evaluate() {
 
 		int utility = 0;
@@ -156,7 +202,10 @@ public class Board {
 		}
 		return utility;
 	}
-
+	/**
+	 * Our heuristic function. 
+	 * @return Returns high values for good moves. Low for bad ones.
+	 */
 	private int CalculateHeuristic() {
 		int playerSolutions = 0;
 		int opponentSolutions = 0;
@@ -181,7 +230,13 @@ public class Board {
 
 		return playerSolutions - opponentSolutions;
 	}
-
+	/**
+	 * [Lasse + Lasse Skriv her]
+	 * @param column 
+	 * @param row
+	 * @param player
+	 * @return
+	 */
 	private int CheckNeighbourDirections(int column, int row,
 			IGameLogic.Winner player) {
 		int possibleDirections = 0;
@@ -254,7 +309,13 @@ public class Board {
 
 		return possibleDirections;
 	}
-
+	/**
+	 * [Lassse + Lasse Skriv her]
+	 * @param column
+	 * @param row
+	 * @param player
+	 * @return
+	 */
 	public int BrickNeighborCount(int column, int row, IGameLogic.Winner player) {
 		int heuristic = 0;
 
@@ -354,7 +415,12 @@ public class Board {
 		}
 		return heuristic;
 	}
-
+	/**
+	 * Returns if a brick is in the position.
+	 * @param column The column to check.
+	 * @param row The row to check.
+	 * @return If the position is occupied.
+	 */
 	private boolean positionIsEmpty(int column, int row) {
 
 		// Outside range of the board
@@ -368,7 +434,14 @@ public class Board {
 		// If nothing has stopped you from getting here, this is your coin
 		return false;
 	}
-
+	
+	/**
+	 * Checks if the brick at position belongs to player
+	 * @param column Column to check
+	 * @param row Row to check
+	 * @param player Player to check for equality.
+	 * @return Weather the coin at row,column belongs to player
+	 */
 	private boolean checkPlayerIsMine(int column, int row,
 			IGameLogic.Winner player) {
 		// Outside range of the board
@@ -384,7 +457,11 @@ public class Board {
 
 		return true;
 	}
-
+	/**
+	 * A naive heuristic function that returns negative values if the enemy player's bricks is closest to the center of the board,
+	 * and symmetric if ourPlayer is closest to the center.
+	 * @return Heuristic value.
+	 */
 	private double EuclidianDistance() {
 		double myDistance = 0, otherDistance = 0;
 		//System.out.println(length);
@@ -407,14 +484,25 @@ public class Board {
 		//System.out.println("\nmyDistance: " + myDistance);
 		return (otherDistance - myDistance) * 1000;
 	}
-
+	/**
+	 * Checks if the position is out of bounds.
+	 * @param column Column to check.
+	 * @param row Row to check.
+	 * @return
+	 */
 	private boolean positionOutOfBounds(int column, int row) {
 		if (column < 0 || column > length || row < 0 || row > height)
 			return true;
 
 		return false;
 	}
-
+	/**
+	 * Checks if the position is within the board and if so, checks if the position contains a coin which is owned by player.
+	 * @param column The column to check
+	 * @param row The row to check. 
+	 * @param player The player to check for.
+	 * @return Weather coin at position belongs to player.
+	 */
 	private boolean positionIsValid(int column, int row,
 			IGameLogic.Winner player) {
 
@@ -433,11 +521,16 @@ public class Board {
 		// If nothing has stopped you from getting here, this is your coin
 		return true;
 	}
-
+	/**
+	 * Checks if the game is finished
+	 * @return True iff game is finished.
+	 */
 	public boolean isGameFinished() {
 		return finished != IGameLogic.Winner.NOT_FINISHED;
 	}
-
+	/**
+	 * Updates the finished state of the game.
+	 */
 	private void updateGameFinished() {
 
 		if (history.size() == 0) {
@@ -549,12 +642,20 @@ public class Board {
 		finished = IGameLogic.Winner.NOT_FINISHED;
 	}
 
+	/**
+	 * A brick can be layed in this column if true is returned.
+	 * @param column Column to check
+	 * @return If there is space for another brick in the column.
+	 */
 	private boolean freeValidColumn(int column) {
 		return (column >= 0 && column <= length && board[column].size() - 1 != height);
 	}
 	
 	
-
+	/**
+	 * Returns a list of valid actions.
+	 * @return A list of valid actions.
+	 */
 	private List<Integer> actions() {
 		Set<Integer> intSet = new HashSet<Integer>(length);
 
