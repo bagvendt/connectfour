@@ -2,7 +2,11 @@ import java.util.*;
 
 
 
-
+/**
+ * 
+ * A board for handleing the 
+ *
+ */
 public class Board {
 
 	private Stack<IGameLogic.Winner>[] board;
