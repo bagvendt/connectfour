@@ -236,10 +236,12 @@ public class Board {
 		return playerSolutions - opponentSolutions;
 	}
 	/**
-	 * [Lasse + Lasse Skriv her]
-	 * @param column 
-	 * @param row
-	 * @param player
+	 * Calculates heuristic by traveling in all directions from the brick
+	 * and checking if there is a possibility for a row of 4 bricks.
+	 * The more possibilities the higher heuristic
+	 * @param the column of the brick 
+	 * @param the row of the brick
+	 * @param the player player
 	 * @return
 	 */
 	private int CheckNeighbourDirections(int column, int row,
@@ -315,10 +317,11 @@ public class Board {
 		return possibleDirections;
 	}
 	/**
-	 * [Lassse + Lasse Skriv her]
-	 * @param column
-	 * @param row
-	 * @param player
+	 * Calculates heuristic based on how many neighbor bricks there is to the brick at (column, row).
+	 * The more neighbors the higher heuristic
+	 * @param the column of the brick
+	 * @param the row of the brick
+	 * @param the player
 	 * @return
 	 */
 	public int BrickNeighborCount(int column, int row, IGameLogic.Winner player) {
