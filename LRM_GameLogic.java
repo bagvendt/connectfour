@@ -56,16 +56,17 @@ public class LRM_GameLogic implements IGameLogic {
 		
 		// We start with a depth of 4, to save some time - We operate in ply
 		int maxDepth = 5;
-		
-		while(System.currentTimeMillis() - startTime < 2000) {
+		int utility = 12345;
+		while(System.currentTimeMillis() - startTime < 2) {
 			
 			gameBoard.clearCache();
 			decisionDepth = maxDepth;
-			maxValue(maxDepth,Integer.MIN_VALUE,Integer.MAX_VALUE);
+			utility = maxValue(maxDepth,Integer.MIN_VALUE,Integer.MAX_VALUE);
 			maxDepth++;
 			System.out.println("Time spent: " + (System.currentTimeMillis() - startTime));
 		}
 		System.out.println("Decision: " + decision);
+		System.out.println("Utility: " + utility);
 		System.out.println("Depth: " + (maxDepth-1));
 		return decision;
 	}
