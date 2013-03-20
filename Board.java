@@ -127,11 +127,16 @@ public class Board {
 	 * What actions can be carried out in this game state.
 	 * @param depth At what depth is the board
 	 * @param player Which player has the turn
+	 * @param moveOrdering Should we do a qualified guess on which move is best.
 	 * @return An array of columns/actions
 	 */
-	public List<Integer> actions(int depth, IGameLogic.Winner player){
+	public List<Integer> actions(int depth, IGameLogic.Winner player, Boolean moveOrdering){
 			
 			List<Integer> initSet = actions();
+			if (!moveOrdering) {
+				return initSet;
+			}
+				
 			Set<Integer> intSet = new LinkedHashSet<Integer>(length);
 			
 			String hash;
@@ -652,6 +657,7 @@ public class Board {
 	private boolean freeValidColumn(int column) {
 		return (column >= 0 && column <= length && board[column].size() - 1 != height);
 	}
+	
 	
 	
 	/**

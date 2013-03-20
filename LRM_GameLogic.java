@@ -55,19 +55,19 @@ public class LRM_GameLogic implements IGameLogic {
 		long startTime = System.currentTimeMillis();
 		
 		// We start with a depth of 4, to save some time - We operate in ply
-		int maxDepth = 5;
+		int maxDepth = 10;
 		int utility = 12345;
 		while(System.currentTimeMillis() - startTime < 2) {
 			
 			gameBoard.clearCache();
 			decisionDepth = maxDepth;
 			utility = maxValue(maxDepth,Integer.MIN_VALUE,Integer.MAX_VALUE);
+			
 			maxDepth++;
 			System.out.println("Time spent: " + (System.currentTimeMillis() - startTime));
+			
 		}
-		System.out.println("Decision: " + decision);
-		System.out.println("Utility: " + utility);
-		System.out.println("Depth: " + (maxDepth-1));
+
 		return decision;
 	}
 	
@@ -86,7 +86,7 @@ public class LRM_GameLogic implements IGameLogic {
 		int v = Integer.MIN_VALUE;
 		int tempValue;
 		// Get a set of (ordered) actions to loop through
-		List<Integer> validColumns = gameBoard.actions(depth,ourPlayer); 
+		List<Integer> validColumns = gameBoard.actions(depth,ourPlayer, false); 
 		
 		if (depth == decisionDepth) System.out.println(validColumns);
 		
@@ -136,8 +136,8 @@ public class LRM_GameLogic implements IGameLogic {
 		int v = Integer.MAX_VALUE;
 		int tempValue;
 		
-		// Get a set of (ordered) actions to loop through
-		for (int column : gameBoard.actions(depth,enemyPlayer)){
+		// Get a randomized list of actions, not move ordered
+		for (int column : gameBoard.actions(depth,enemyPlayer,false)){
 			
 			gameBoard.layCoin(column, enemyPlayer);
 			
