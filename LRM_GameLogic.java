@@ -54,17 +54,19 @@ public class LRM_GameLogic implements IGameLogic {
 		
 		long startTime = System.currentTimeMillis();
 		
-		// We start with a depth of 4, to save some time - We operate in moves, not ply
+		// We start with a depth of 4, to save some time - We operate in ply
 		int maxDepth = 5;
 		
-		while(System.currentTimeMillis() - startTime < 9000) {
+		while(System.currentTimeMillis() - startTime < 2000) {
 			
 			gameBoard.clearCache();
 			decisionDepth = maxDepth;
 			maxValue(maxDepth,Integer.MIN_VALUE,Integer.MAX_VALUE);
 			maxDepth++;
+			System.out.println("Time spent: " + (System.currentTimeMillis() - startTime));
 		}
-		System.out.println(decision);
+		System.out.println("Decision: " + decision);
+		System.out.println("Depth: " + (maxDepth-1));
 		return decision;
 	}
 	
@@ -84,9 +86,10 @@ public class LRM_GameLogic implements IGameLogic {
 		int tempValue;
 		// Get a set of (ordered) actions to loop through
 		List<Integer> validColumns = gameBoard.actions(depth,ourPlayer); 
-		if (depth == decisionDepth){ System.out.println(validColumns);
 		
-		}
+		if (depth == decisionDepth) System.out.println(validColumns);
+		
+		
 		for (int column : validColumns){
 			
 			gameBoard.layCoin(column, ourPlayer);
@@ -97,7 +100,7 @@ public class LRM_GameLogic implements IGameLogic {
 			}
 			// Otherwise calculate it and add it to the cache
 			else{ 
-				tempValue = minValue(depth,alpha,beta);
+				tempValue = minValue(depth-1,alpha,beta);
 				gameBoard.addThisToCache(depth, tempValue);
 			}
 			
@@ -136,8 +139,6 @@ public class LRM_GameLogic implements IGameLogic {
 		for (int column : gameBoard.actions(depth,enemyPlayer)){
 			
 			gameBoard.layCoin(column, enemyPlayer);
-
-			tempValue = maxValue(depth-1,alpha,beta); 
 			
 			// If the node is cached, just get the utility value
 			if (gameBoard.isCached(depth)){

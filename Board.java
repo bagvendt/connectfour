@@ -182,13 +182,13 @@ public class Board {
 		int utility = 0;
 		switch (finished) {
 		case PLAYER1:
-			utility = ourPlayer == IGameLogic.Winner.PLAYER1 ? Integer.MAX_VALUE
-					: Integer.MIN_VALUE;
+			utility = ourPlayer == IGameLogic.Winner.PLAYER1 ? Integer.MAX_VALUE-1
+					: Integer.MIN_VALUE+1;
 			break;
 
 		case PLAYER2:
-			utility = ourPlayer == IGameLogic.Winner.PLAYER2 ? Integer.MAX_VALUE
-					: Integer.MIN_VALUE;
+			utility = ourPlayer == IGameLogic.Winner.PLAYER2 ? Integer.MAX_VALUE-1
+					: Integer.MIN_VALUE+1;
 			break;
 
 		case TIE:
@@ -637,6 +637,8 @@ public class Board {
 
 		if (tie) {
 			finished = IGameLogic.Winner.TIE;
+			System.out.println("This is a tie!");
+			return;
 		}
 
 		finished = IGameLogic.Winner.NOT_FINISHED;
